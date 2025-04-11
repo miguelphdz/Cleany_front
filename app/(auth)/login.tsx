@@ -11,18 +11,6 @@ const LoginScreen: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = () => {
-    // Aquí más adelante conectarás con tu backend (ej. usando fetch o axios)
-    // Ejemplo:
-    // try {
-    //   const response = await axios.post('http://tu-api-laravel.com/api/login', {
-    //     email,
-    //     password,
-    //     rememberMe,
-    //   });
-    //   // Maneja la respuesta, guarda token, etc.
-    // } catch (error) {
-    //   console.error(error);
-    // }
     console.log('Iniciar sesión con', { email, password, rememberMe });
   };
 
@@ -40,11 +28,9 @@ const LoginScreen: React.FC = () => {
         resizeMode="contain"
       />
 
-      {/* Título */}
       <Text style={styles.title}>¡Te extrañamos!</Text>
       <Text style={styles.subTitle}>Iniciemos sesión</Text>
 
-      {/* Campos de texto */}
       <TextField
         placeholder="E-Mail"
         value={email}
@@ -59,13 +45,11 @@ const LoginScreen: React.FC = () => {
         secureTextEntry
       />
 
-      {/* Botón de Ingresar */}
       <MainButton
         title="Ingresar" 
         onPress={handleLogin} 
       />
 
-      {/* Link para crear cuenta */}
       <View style={styles.footerContainer}>
         <Text style={styles.footerText}>¿No tienes una cuenta?</Text>
         <TouchableOpacity onPress={handleCreateAccount}>
