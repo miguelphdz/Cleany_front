@@ -15,13 +15,11 @@ const LoginScreen: React.FC = () => {
   };
 
   const handleCreateAccount = () => {
-    // Aquí podrías navegar a una pantalla de registro
     console.log('Ir a crear cuenta');
   };
 
   return (
     <View style={styles.container}>
-      {/* Logo e imagen superior */}
       <Image
         source={require('../../assets/images/CLEANY-LOGO.png')}
         style={styles.logo}
