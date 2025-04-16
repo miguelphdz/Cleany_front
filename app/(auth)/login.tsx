@@ -1,18 +1,63 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import TextField from '../components/TextField';
 import MainButton from '../components/MainButton';
 import { styles } from '@/styles/auth.styles';
+import { useRouter } from 'expo-router';
 
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const navigation = useNavigation();
+  const router = useRouter();
 
-  const handleLogin = () => {
-    console.log('Iniciar sesión con', { email, password, rememberMe });
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        router.replace('/(tabs)');
+      }
+    };
+  
+    checkAuth();
+  }, []);
+
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://192.168.1.209:8000/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        console.log('Error en el login:', data.error);
+        return;
+      }
+  
+      console.log('Token recibido:', data.access_token);
+      await AsyncStorage.setItem('token', data.access_token);
+  
+      router.replace('/(tabs)'); 
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+    }
   };
+  
+  
 
   const handleCreateAccount = () => {
     console.log('Ir a crear cuenta');
