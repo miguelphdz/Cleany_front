@@ -11,6 +11,15 @@ export const styles = StyleSheet.create({
       paddingTop: 40,
       justifyContent: 'flex-start'
     },
+    headerContainer: {
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        
+    },
+    logoutIcon:{
+        marginBottom:14
+    },
     searchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -21,9 +30,9 @@ export const styles = StyleSheet.create({
       marginBottom: 16,
     },
     searchInput: {
-      flex: 1,
       color: 'black',
       fontSize: 16,
+      width:200
     },
     locationWrapper: {
       flexDirection: 'row',

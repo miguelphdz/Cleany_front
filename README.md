@@ -10,3 +10,4 @@ npm i nativewind
 
 npm install react-native-geolocation-service
 npx pod-install
+npx expo install expo-location

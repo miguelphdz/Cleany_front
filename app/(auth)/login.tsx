@@ -18,13 +18,38 @@ const LoginScreen: React.FC = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('token');
-      if (token) {
-        router.replace('/(tabs)');
+      if (!token) {
+        return;
+      }
+  
+      try {
+        const res = await fetch('http://192.168.1.209:8000/api/v1/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+          },
+        });
+  
+        if (!res.ok) {
+          throw new Error('Token inválido');
+        }
+  
+        const user = await res.json();
+        console.log('Usuario autenticado:', user);
+        router.replace('/(tabs)'); 
+  
+      } catch (error) {
+        const err = error as Error;
+        console.log('Token inválido o expirado:', err.message);
+        await AsyncStorage.removeItem('token');
+        router.replace('/(auth)/login'); // Redirige si el token no sirve
       }
     };
   
     checkAuth();
   }, []);
+  
 
 
   const handleLogin = async () => {
@@ -50,7 +75,7 @@ const LoginScreen: React.FC = () => {
   
       console.log('Token recibido:', data.access_token);
       await AsyncStorage.setItem('token', data.access_token);
-  
+      console.log('Token válido, redirigiendo al home...');
       router.replace('/(tabs)'); 
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
