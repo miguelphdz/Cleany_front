@@ -2,7 +2,6 @@ import { StyleSheet, Dimensions } from "react-native"
 
 const {width, height } = Dimensions.get("window")
 
-
 export const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -10,12 +9,6 @@ export const styles = StyleSheet.create({
       padding: 16,
       paddingTop: 40,
       justifyContent: 'flex-start'
-    },
-    headerContainer: {
-        flexDirection:'row',
-        justifyContent:'space-between',
-        alignItems:'center',
-        
     },
     logoutIcon:{
         marginBottom:14
@@ -28,6 +21,7 @@ export const styles = StyleSheet.create({
       paddingHorizontal: 16,
       paddingVertical: 8,
       marginBottom: 16,
+      justifyContent: 'space-between'
     },
     searchInput: {
       color: 'black',

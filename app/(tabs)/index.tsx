@@ -112,8 +112,9 @@ const Home = () => {
   }, []);
 
   return (
-      <View style={styles.headerContainer}>
-    {/* Search */}
+
+    <View style={styles.container}>
+   
     <View style={styles.searchContainer}>
         <TextInput
           placeholder="Buscar"
@@ -125,7 +126,7 @@ const Home = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Location */}
+   
       <View style={styles.locationWrapper}>
         <Text style={styles.locationTitle}>Near you</Text>
         <View style={styles.locationBadge}>
@@ -133,6 +134,7 @@ const Home = () => {
           <Ionicons name="location-sharp" size={16} color="#5630D4" />
         </View>
       </View>
+      
 
       {/* Employee list */}
       <ScrollView showsVerticalScrollIndicator={false}>
