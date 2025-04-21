@@ -106,7 +106,7 @@ export default function RegisterTwoScreen() {
   const handleNext = async () => {
     if (
       !email || !password || !user_type ||
-      !name || !lastname || !description || !birthDate || !selectedLocation
+      !name || !lastname || !description || !birthDate || !selectedLocation || !imageUri
     ) {
       Alert.alert('Por favor llena todos los campos');
       return;
