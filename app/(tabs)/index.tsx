@@ -50,7 +50,7 @@ const Home = () => {
   const fetchEmployees = async () => {
     try {
       const token = await AsyncStorage.getItem('token'); // Ajusta si usas otro método
-      const response = await axios.get('http://192.168.1.209:8000/api/employees', {
+      const response = await axios.get('http://192.168.1.14:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -83,19 +83,20 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://192.168.1.209:8000/api/v1/auth/me', {
+        const res = await fetch('http://192.168.1.14:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
         });
-        
+           
         const data = await res.json();
+        console.log('DATA DEL USUARIO:', data);
         
         if (!res.ok) throw new Error('Token inválido');
         
-        setUserLocation(data.profile?.location?.name ?? 'Ubicación desconocida');
+        setUserLocation(data.user?.profile?.location?.name ?? 'Ubicación desconocida');
         
       } catch (error) {
         console.log('ERROR en validación:', error);
@@ -109,8 +110,15 @@ const Home = () => {
 
   const router = useRouter();
 
-
-
+  useEffect(() => {
+    const clearStorage = async () => {
+      await AsyncStorage.clear();
+      console.log('AsyncStorage limpiado');
+    };
+  
+    clearStorage();
+  }, []);
+  
   useEffect(() => {
     fetchEmployees();
   }, []);

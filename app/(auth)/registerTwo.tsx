@@ -44,7 +44,7 @@ export default function RegisterTwoScreen() {
 
     const fetchLocations = async () => {
       try {
-        const response = await fetch('http://192.168.1.209:8000/api/locations');
+        const response = await fetch('http://192.168.1.14:8000/api/locations');
         const data = await response.json();
         setLocations(data);
       } catch (error) {
@@ -94,7 +94,7 @@ export default function RegisterTwoScreen() {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
-      cameraType: ImagePicker.CameraType.front, // Usa la cámara frontal
+      cameraType: ImagePicker.CameraType.front, 
     });
   
     if (!result.canceled) {
@@ -103,16 +103,6 @@ export default function RegisterTwoScreen() {
   };
   
   const handleNext = async () => {
-    console.log(email);
-    console.log(password);
-    console.log(user_type);
-    console.log(name);
-    console.log(lastname);
-    console.log(description);
-    console.log(birthDate);
-    console.log(selectedLocation);
-    console.log(imageUri);
-
     if (
       !email || !password || !user_type ||
       !name || !lastname || !description || !birthDate || !selectedLocation
@@ -129,7 +119,7 @@ export default function RegisterTwoScreen() {
           
           const birth_date = formatDate(birthDate);
           
-        const registerResponse = await fetch('http://192.168.1.209:8000/api/v1/auth/register', {
+        const registerResponse = await fetch('http://192.168.1.14:8000/api/v1/auth/register', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -225,7 +215,7 @@ export default function RegisterTwoScreen() {
       setShowDatePicker(false);
       if (selectedDate) {
         setBirthDateObj(selectedDate);
-        const formatted = selectedDate.toLocaleDateString('es-MX'); // o usa tu formato preferido
+        const formatted = selectedDate.toLocaleDateString('es-MX'); 
         setBirthDate(formatted);
       }
     }}

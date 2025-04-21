@@ -9,3 +9,12 @@ npm install @react-native-async-storage/async-storage
 npm i nativewind
 
 npx expo install expo-image-picker
+
+useEffect(() => {
+  const clearStorage = async () => {
+    await AsyncStorage.clear();
+    console.log('AsyncStorage limpiado');
+  };
+
+  clearStorage();
+}, []);
