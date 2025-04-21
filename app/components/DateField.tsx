@@ -4,20 +4,23 @@ import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "@/constants/theme";
 
-interface TextFieldProps {
+interface DateFieldProps {
     placeholder: string;
     value: string;
     onChangeText: (text: string) => void;
     iconName: string;
     secureTextEntry?: boolean;
+    keyboardType: string;
+
 }
 
-const TextField: React.FC<TextFieldProps> = ({
+const DateField: React.FC<DateFieldProps> = ({
     placeholder,
     value,
     onChangeText,
     iconName,
     secureTextEntry = false,
+    keyboardType="default"
 }) => {
     return (
       <View style={styles.container}>
@@ -29,12 +32,13 @@ const TextField: React.FC<TextFieldProps> = ({
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
+          keyboardType="default"
         />
       </View>
     );
   };
 
-  export default TextField;
+  export default DateField;
 
   const styles = StyleSheet.create({
     container: {

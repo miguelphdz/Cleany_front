@@ -44,6 +44,8 @@ const EmployeeCard = ({ name, description, rating, photo }: EmployeeCardProps) =
 const Home = () => {
 
   const [employees, setEmployees] = useState<EmployeeCardProps[]>([]);
+  const [userLocation, setUserLocation] = useState<string>('');
+
 
   const fetchEmployees = async () => {
     try {
@@ -90,9 +92,11 @@ const Home = () => {
         });
         
         const data = await res.json();
-        console.log('Respuesta de /me:', data);
-
+        
         if (!res.ok) throw new Error('Token inválido');
+        
+        setUserLocation(data.profile?.location?.name ?? 'Ubicación desconocida');
+        
       } catch (error) {
         console.log('ERROR en validación:', error);
         await AsyncStorage.removeItem('token');
@@ -130,8 +134,8 @@ const Home = () => {
       <View style={styles.locationWrapper}>
         <Text style={styles.locationTitle}>Near you</Text>
         <View style={styles.locationBadge}>
-          <Text style={styles.locationText}>Morelia</Text>
-          <Ionicons name="location-sharp" size={16} color="#5630D4" />
+        <Text style={styles.locationText}>{userLocation}</Text>
+        <Ionicons name="location-sharp" size={16} color="#5630D4" />
         </View>
       </View>
       

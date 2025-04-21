@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import TextField from '../components/TextField';
 import MainButton from '../components/MainButton';
 import { styles } from '@/styles/auth.styles';
 import { useRouter } from 'expo-router';
 
 
+
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  const navigation = useNavigation();
   const router = useRouter();
 
   useEffect(() => {
@@ -43,7 +42,7 @@ const LoginScreen: React.FC = () => {
         const err = error as Error;
         console.log('Token inválido o expirado:', err.message);
         await AsyncStorage.removeItem('token');
-        router.replace('/(auth)/login'); // Redirige si el token no sirve
+        router.replace('/(auth)/login'); 
       }
     };
   
@@ -85,7 +84,7 @@ const LoginScreen: React.FC = () => {
   
 
   const handleCreateAccount = () => {
-    console.log('Ir a crear cuenta');
+    router.push('/(auth)/registerOne'); // o la ruta que corresponda a tu pantalla de registro
   };
 
   return (

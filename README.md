@@ -8,6 +8,4 @@ npm install @react-native-async-storage/async-storage
 
 npm i nativewind
 
-npm install react-native-geolocation-service
-npx pod-install
-npx expo install expo-location
+npx expo install expo-image-picker
