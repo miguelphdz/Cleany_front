@@ -22,6 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Platform } from 'react-native';
+import MainButton from '../components/MainButton';
 
 
 
@@ -225,7 +226,11 @@ export default function RegisterTwoScreen() {
 
       <TouchableOpacity style={styles.input} onPress={() => setShowRoleModal(true)}>
         <Ionicons name={"location-outline"} size={20} color={COLORS.black} style={styles.icon} />
-        <Text style={styles.text}>{selectedLocation || 'Ubicación'}</Text>
+        <Text style={styles.text}>
+            {selectedLocation
+            ? locations.find(loc => loc.id === selectedLocation)?.name
+            : 'Ubicación'}
+        </Text>
       </TouchableOpacity>
 
       <Modal visible={showRoleModal} transparent animationType="slide">
@@ -253,10 +258,8 @@ export default function RegisterTwoScreen() {
   </TouchableOpacity>
 </Modal>
 
+      <MainButton title="Siguiente" onPress={handleNext} />
 
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>Siguiente</Text>
-      </TouchableOpacity>
     </View>
   );
 }

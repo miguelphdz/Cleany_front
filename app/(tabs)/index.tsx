@@ -110,15 +110,8 @@ const Home = () => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const clearStorage = async () => {
-      await AsyncStorage.clear();
-      console.log('AsyncStorage limpiado');
-    };
   
-    clearStorage();
-  }, []);
-  
+
   useEffect(() => {
     fetchEmployees();
   }, []);
