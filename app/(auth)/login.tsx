@@ -22,7 +22,7 @@ const LoginScreen: React.FC = () => {
       }
   
       try {
-        const res = await fetch('http://192.168.1.14:8000/api/v1/me', {
+        const res = await fetch('http://10.31.14.119:8000/api/v1/me', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -53,7 +53,7 @@ const LoginScreen: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.1.14:8000/api/v1/auth/login', {
+      const response = await fetch('http://10.31.14.119:8000/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

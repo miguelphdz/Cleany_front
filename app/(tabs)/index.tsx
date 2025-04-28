@@ -45,12 +45,27 @@ const Home = () => {
 
   const [employees, setEmployees] = useState<EmployeeCardProps[]>([]);
   const [userLocation, setUserLocation] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeCardProps[]>([]);
 
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+
+    if (text === '') {
+      setFilteredEmployees(employees);
+    } else {
+      const filtered = employees.filter((employee) =>
+        employee.name.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredEmployees(filtered);
+      console.log("holahola")
+    }
+  };
 
   const fetchEmployees = async () => {
     try {
-      const token = await AsyncStorage.getItem('token'); // Ajusta si usas otro método
-      const response = await axios.get('http://192.168.1.14:8000/api/employees', {
+      const token = await AsyncStorage.getItem('token'); 
+      const response = await axios.get('http://10.31.14.119:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,16 +78,15 @@ const Home = () => {
         rating: user.profile.calification ?? 0,
         photo: user.profile.photo,
       }));
-
       setEmployees(formatted);
+      setFilteredEmployees(formatted); 
     } catch (error) {
       console.error('Error al obtener empleados:', error);
     }
   };
   useEffect(() => {
     const validateToken = async () => {
-      // Espera leve para dar tiempo a AsyncStorage
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 100));
   
       const token = await AsyncStorage.getItem('token');
       console.log('TOKEN EN HOME:', token);
@@ -83,7 +97,7 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://192.168.1.14:8000/api/v1/auth/me', {
+        const res = await fetch('http://10.31.14.119:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -110,7 +124,9 @@ const Home = () => {
 
   const router = useRouter();
 
-  
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [employees]);
 
   useEffect(() => {
     fetchEmployees();
@@ -125,6 +141,8 @@ const Home = () => {
           placeholder="Buscar"
           placeholderTextColor="#000"
           style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={handleSearch}
         />
         <TouchableOpacity>
           <Ionicons name="search" size={20} color="black" />
@@ -143,7 +161,7 @@ const Home = () => {
 
       {/* Employee list */}
       <ScrollView showsVerticalScrollIndicator={false}>
-        {employees.map((employee, index) => (
+        {filteredEmployees.map((employee, index) => (
           <EmployeeCard
             key={index}
             name={employee.name}
