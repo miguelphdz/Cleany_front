@@ -45,7 +45,7 @@ export default function RegisterTwoScreen() {
 
     const fetchLocations = async () => {
       try {
-        const response = await fetch('http://10.31.14.119:8000/api/locations');
+        const response = await fetch('http://10.31.8.23:8000/api/locations');
         const data = await response.json();
         setLocations(data);
       } catch (error) {
@@ -120,7 +120,7 @@ export default function RegisterTwoScreen() {
           
           const birth_date = formatDate(birthDate);
           
-        const registerResponse = await fetch('http://10.31.14.119:8000/api/v1/auth/register', {
+        const registerResponse = await fetch('http://10.31.8.23:8000/api/v1/auth/register', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

@@ -65,13 +65,12 @@ const Home = () => {
   const fetchEmployees = async () => {
     try {
       const token = await AsyncStorage.getItem('token'); 
-      const response = await axios.get('http://10.31.14.119:8000/api/employees', {
+      const response = await axios.get('http://10.31.8.23:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // Mapear los datos al formato del componente
       const formatted = response.data.map((user: any) => ({
         name: `${user.profile.name} ${user.profile.last_name}`,
         description: user.profile.description,
@@ -97,7 +96,7 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://10.31.14.119:8000/api/v1/auth/me', {
+        const res = await fetch('http://10.31.8.23:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -111,6 +110,14 @@ const Home = () => {
         if (!res.ok) throw new Error('Token inválido');
         
         setUserLocation(data.user?.profile?.location?.name ?? 'Ubicación desconocida');
+        
+        await AsyncStorage.setItem('profileData', JSON.stringify({
+          name: `${data.user.profile.name} ${data.user.profile.last_name}`,
+          description: data.user.profile.description,
+          rating: data.user.profile.calification ?? 0,
+          photo: data.user.profile.photo,
+          user_type: data.user.profile.location,
+        }));
         
       } catch (error) {
         console.log('ERROR en validación:', error);
@@ -127,6 +134,8 @@ const Home = () => {
   useEffect(() => {
     handleSearch(searchQuery);
   }, [employees]);
+
+    
 
   useEffect(() => {
     fetchEmployees();
