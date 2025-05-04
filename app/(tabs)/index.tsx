@@ -4,10 +4,11 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { styles } from '@/styles/tabs.home';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { router, useRouter } from 'expo-router';
 
 
 type EmployeeCardProps = {
+  id?: number;
   name: string;
   description: string;
   rating: number;
@@ -41,6 +42,18 @@ const EmployeeCard = ({ name, description, rating, photo }: EmployeeCardProps) =
   );
 };
 
+const handleCardPress = async (employee: any) => {
+  try {
+    await AsyncStorage.setItem('selectedProfile', JSON.stringify(employee));
+    router.push({
+      pathname: '/user/[id]',
+      params: { id: employee.id.toString() },
+    });
+  } catch (error) {
+    console.error('Error storing employee data:', error);
+  }
+};
+
 const Home = () => {
 
   const [employees, setEmployees] = useState<EmployeeCardProps[]>([]);
@@ -65,24 +78,27 @@ const Home = () => {
   const fetchEmployees = async () => {
     try {
       const token = await AsyncStorage.getItem('token'); 
-      const response = await axios.get('http://10.31.8.23:8000/api/employees', {
+      const response = await axios.get('http://192.168.1.134:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       const formatted = response.data.map((user: any) => ({
+        id:user.id,
         name: `${user.profile.name} ${user.profile.last_name}`,
         description: user.profile.description,
         rating: user.profile.calification ?? 0,
         photo: user.profile.photo,
       }));
+
       setEmployees(formatted);
       setFilteredEmployees(formatted); 
     } catch (error) {
       console.error('Error al obtener empleados:', error);
     }
   };
+
   useEffect(() => {
     const validateToken = async () => {
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -96,7 +112,7 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://10.31.8.23:8000/api/v1/auth/me', {
+        const res = await fetch('http://192.168.1.134:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -135,7 +151,6 @@ const Home = () => {
     handleSearch(searchQuery);
   }, [employees]);
 
-    
 
   useEffect(() => {
     fetchEmployees();
@@ -170,16 +185,19 @@ const Home = () => {
 
       {/* Employee list */}
       <ScrollView showsVerticalScrollIndicator={false}>
-        {filteredEmployees.map((employee, index) => (
-          <EmployeeCard
-            key={index}
-            name={employee.name}
-            description={employee.description}
-            rating={employee.rating}
-            photo={employee.photo}
-          />
-        ))}
+        {filteredEmployees.map((employee, index) => {
+          const { id, ...cardProps } = employee;
+            return (
+             <TouchableOpacity
+              key={index}
+              onPress={() => handleCardPress(employee)}
+             >
+                <EmployeeCard {...cardProps} />
+             </TouchableOpacity>
+            );
+          })}
       </ScrollView>
+
     </View>
   );
 };
