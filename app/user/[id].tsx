@@ -27,41 +27,34 @@ type Review = {
     photo: string
 }
 
-const mockReviews: Review[] = [
-    {
-      id: 1,
-      name: 'Cliente 1',
-      comment: 'Muy buen trabajo, rápido y profesional.',
-      rating: 5,
-      photo: 'https://randomuser.me/api/portraits/women/1.jpg',
-    },
-    {
-      id: 2,
-      name: 'Cliente 2',
-      comment: 'Excelente servicio. Lo recomiendo mucho.',
-      rating: 4,
-      photo: 'https://randomuser.me/api/portraits/men/2.jpg',
-    },
-    {
-      id: 3,
-      name: 'Cliente 3',
-      comment: 'Muy amable y puntual.',
-      rating: 5,
-      photo: 'https://randomuser.me/api/portraits/women/3.jpg',
-    },
-  ]
 
 export default function UserProfile() {
 
     const [profile, setProfile] = useState<Profile | null>(null)
     const [message, setMessage] = useState('')
     const [experience, setExperience] = useState('')
+    const [reviews, setReviews] = useState<Review[]>([])
+
   
     useEffect(() => {
-        AsyncStorage.getItem('selectedProfile').then(json => {
-          if (json) setProfile(JSON.parse(json))
-        })
-      }, [])
+        const loadProfileAndReviews = async () => {
+            const json = await AsyncStorage.getItem('selectedProfile');
+            if (json) {
+                const parsed = JSON.parse(json);
+                setProfile(parsed);
+
+                try {
+                    const res = await fetch(`http://192.168.1.134:8000/api/references/${parsed.id}`);
+                    const data = await res.json();
+                    setReviews(data);
+                } catch (error) {
+                    console.error('error cargando reviews: ', error);
+                }
+            }
+        }
+        
+        loadProfileAndReviews();
+      }, []);
     
       if (!profile) {
         return (
@@ -69,7 +62,43 @@ export default function UserProfile() {
             <Text>Cargando perfil…</Text>
           </View>
         )
-      }
+    }
+
+    const handleSendExperience = async () => {
+        if (!experience.trim()) return;
+        try {
+            const currentUserJson = await AsyncStorage.getItem('currentProfile');
+            const currentUser = currentUserJson ? JSON.parse(currentUserJson) : null;
+
+            if (!currentUser || !profile) return;
+
+            const res = await fetch(`http://192.168.1.134:8000/api/references`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_profile: profile.id,
+                    id_user: currentUser.id,
+                    content: experience,
+                }),
+            });
+            
+            const data = await res.json();
+
+            if (res.ok) {
+                setExperience('');
+
+                const refreshed = await fetch(`http://192.168.1.134:8000/api/references/${profile.id}`);
+                const updateReviews = await refreshed.json();
+                setReviews(updateReviews);
+            } else {
+                console.error('Error al enviar experiencias: ', data);
+            }
+        } catch (err) {
+            console.error('Error al enviar experiencias: ', err);
+        }
+    };
 
   return (
 <ScrollView contentContainerStyle={styles.container}>
@@ -116,28 +145,15 @@ export default function UserProfile() {
 
       {/* Reseñas */}
       <Text style={styles.sectionTitle}>Reseñas de otros usuarios</Text>
-      {mockReviews.map(r => (
-        <View key={r.id} style={styles.reviewCard}>
-          <View style={styles.reviewHeader}>
-            <Image source={{ uri: r.photo }} style={styles.reviewAvatar} />
-            <View style={{ marginLeft: 12, flex: 1 }}>
-              <Text style={styles.reviewerName}>{r.name}</Text>
-              <View style={styles.reviewStars}>
-                {[...Array(5)].map((_, i) => (
-                  <FontAwesome
-                    key={i}
-                    name={i < r.rating ? 'star' : 'star-o'}
-                    size={14}
-                    color="#5630D4"
-                    style={{ marginRight: 1 }}
-                  />
-                ))}
-              </View>
-            </View>
-          </View>
-          <Text style={styles.reviewText}>{r.comment}</Text>
-        </View>
-      ))}
+      {reviews.map(r => (
+  <View key={r.id} style={styles.reviewCard}>
+    <View style={styles.reviewHeader}>
+      <Image source={{ uri: r.photo }} style={styles.reviewAvatar} />
+      <Text style={styles.reviewerName}>{r.name}</Text>
+    </View>
+    <Text style={styles.reviewContent}>{r.comment}</Text>
+  </View>
+))}
 
       {/* Compartir experiencia */}
       <Text style={styles.sectionTitle}>Comparte tu experiencia</Text>
@@ -150,7 +166,7 @@ export default function UserProfile() {
         value={experience}
         onChangeText={setExperience}
       />
-      <TouchableOpacity style={styles.submitButton}>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSendExperience}>
         <Text style={styles.submitButtonText}>Enviar experiencia</Text>
       </TouchableOpacity>
     </ScrollView>

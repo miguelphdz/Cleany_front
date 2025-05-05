@@ -67,6 +67,7 @@ export  const styles = StyleSheet.create({
       reviewerName: {
         fontWeight: '600',
         fontSize: 14,
+        marginLeft:4,
       },
       reviewStars: {
         flexDirection: 'row',
@@ -99,6 +100,12 @@ export  const styles = StyleSheet.create({
         fontWeight: '600',
       },
       loadingContainer: {
-        
-      }
+
+      },
+      reviewContent: {
+        marginTop: 4,
+        fontSize: 14,
+        color: '#333',
+        marginLeft:4,
+      },
 });
