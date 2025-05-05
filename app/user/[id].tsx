@@ -6,10 +6,22 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  Modal,
+  Alert,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import { styles } from '@/styles/user.profileScreen'
+import { FlatList } from 'react-native-gesture-handler'
+
+const reasons = [
+    'Lenguaje ofensivo',
+    'Acoso',
+    'Contenido inapropiado',
+    'Fraude o estafa',
+    'Violencia o agresión física',
+    'Spam',
+];
 
 type Profile = {
     id: number;
@@ -34,6 +46,8 @@ export default function UserProfile() {
     const [message, setMessage] = useState('')
     const [experience, setExperience] = useState('')
     const [reviews, setReviews] = useState<Review[]>([])
+    const [showReportModal, setShowReportModal] = useState(false)
+    const [selectedReason, setSelectedReason] = useState<string | null>(null)
 
   
     useEffect(() => {
@@ -64,10 +78,53 @@ export default function UserProfile() {
         )
     }
 
+    const openReport = () => {
+        setSelectedReason(null);
+        setShowReportModal(true);
+      };
+    
+      const sendReport = async () => {
+        try {
+            const currentUserJson = await AsyncStorage.getItem('currentProfile');
+            const currentUser = currentUserJson ? JSON.parse(currentUserJson) : null;
+            console.log(selectedReason, profile, currentUser)
+          if (!selectedReason || !profile || !currentUser) {
+            Alert.alert('Error', 'Faltan datos para enviar el reporte');
+            return;
+          }
+      
+          const res = await fetch('http://192.168.1.134:8000/api/reports', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id_profile: profile.id,
+                id_user: currentUser.id,
+                content: selectedReason,
+            }),
+          });
+      
+          const data = await res.json();
+      
+          if (res.ok) {
+            setShowReportModal(false);
+            Alert.alert('Reporte enviado', 'El usuario ha sido reportado correctamente.');
+          } else {
+            console.error('Error al enviar el reporte:', data);
+            Alert.alert('Error', 'Hubo un problema al enviar el reporte.');
+          }
+        } catch (error) {
+          console.error('Error al enviar el reporte:', error);
+          Alert.alert('Error', 'No se pudo conectar al servidor.');
+        }
+      };   
+
     const handleSendExperience = async () => {
         if (!experience.trim()) return;
         try {
             const currentUserJson = await AsyncStorage.getItem('currentProfile');
+            console.log('currentProfile desde AsyncStorage:', currentUserJson);
             const currentUser = currentUserJson ? JSON.parse(currentUserJson) : null;
 
             if (!currentUser || !profile) return;
@@ -101,6 +158,7 @@ export default function UserProfile() {
     };
 
   return (
+    <>
 <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -117,6 +175,14 @@ export default function UserProfile() {
             />
           ))}
         </View>
+
+        <TouchableOpacity
+            style={styles.reportButton}
+            onPress={openReport}
+          >
+            <Ionicons name="alert-circle-outline" size={28} color="#E53935" />
+          </TouchableOpacity>
+
       </View>
 
       {/* Descripción */}
@@ -170,5 +236,57 @@ export default function UserProfile() {
         <Text style={styles.submitButtonText}>Enviar experiencia</Text>
       </TouchableOpacity>
     </ScrollView>
+
+          <Modal
+          visible={showReportModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowReportModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Selecciona un motivo</Text>
+              <FlatList
+                data={reasons}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.reasonItem,
+                      item === selectedReason && styles.reasonItemSelected
+                    ]}
+                    onPress={() => setSelectedReason(item)}
+                  >
+                    <Text
+                      style={[
+                        styles.reasonText,
+                        item === selectedReason && styles.reasonTextSelected
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.modalButton,
+                  !selectedReason && styles.modalButtonDisabled
+                ]}
+                onPress={sendReport}
+                disabled={!selectedReason}
+              >
+                <Text style={styles.modalButtonText}>Enviar reporte</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalClose}
+                onPress={() => setShowReportModal(false)}
+              >
+                <Text style={styles.modalCloseText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        </>
   )
 }

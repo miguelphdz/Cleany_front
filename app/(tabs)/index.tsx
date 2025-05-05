@@ -127,13 +127,17 @@ const Home = () => {
         
         setUserLocation(data.user?.profile?.location?.name ?? 'Ubicación desconocida');
         
-        await AsyncStorage.setItem('profileData', JSON.stringify({
+        const profileObj = {
           name: `${data.user.profile.name} ${data.user.profile.last_name}`,
           description: data.user.profile.description,
           rating: data.user.profile.calification ?? 0,
           photo: data.user.profile.photo,
           user_type: data.user.profile.location,
-        }));
+          id: data.user.profile.id, 
+        };
+        
+        await AsyncStorage.setItem('currentProfile', JSON.stringify(profileObj));
+        
         
       } catch (error) {
         console.log('ERROR en validación:', error);

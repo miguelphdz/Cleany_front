@@ -108,4 +108,67 @@ export  const styles = StyleSheet.create({
         color: '#333',
         marginLeft:4,
       },
+      reportButton: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+      },
+    
+      modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'flex-end',
+      },
+      modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+        maxHeight: '60%',
+      },
+      modalTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 12,
+        textAlign: 'center',
+      },
+      reasonItem: {
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderBottomColor: '#EEE',
+        borderBottomWidth: 1,
+      },
+      reasonItemSelected: {
+        backgroundColor: '#E3F2FD',
+      },
+      reasonText: {
+        fontSize: 16,
+      },
+      reasonTextSelected: {
+        color: '#1976D2',
+        fontWeight: '600',
+      },
+      modalButton: {
+        backgroundColor: '#E53935',
+        paddingVertical: 12,
+        borderRadius: 8,
+        marginTop: 16,
+        alignItems: 'center',
+      },
+      modalButtonDisabled: {
+        backgroundColor: '#F8BBD0',
+      },
+      modalButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
+      },
+      modalClose: {
+        marginTop: 12,
+        alignItems: 'center',
+      },
+      modalCloseText: {
+        color: '#777',
+        fontSize: 14,
+      },
 });
