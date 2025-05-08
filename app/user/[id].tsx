@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import { styles } from '@/styles/user.profileScreen'
 import { FlatList } from 'react-native-gesture-handler'
+import axios from 'axios'
+import { useFocusEffect } from 'expo-router'
 
 const reasons = [
     'Lenguaje ofensivo',
@@ -48,27 +50,54 @@ export default function UserProfile() {
     const [reviews, setReviews] = useState<Review[]>([])
     const [showReportModal, setShowReportModal] = useState(false)
     const [selectedReason, setSelectedReason] = useState<string | null>(null)
+    const [userRating, setUserRating] = useState<number>(0);
 
-  
-    useEffect(() => {
-        const loadProfileAndReviews = async () => {
-            const json = await AsyncStorage.getItem('selectedProfile');
-            if (json) {
-                const parsed = JSON.parse(json);
-                setProfile(parsed);
+    const handleRatingPress = (rating: number) => {
+        setUserRating(rating);
+    };
 
-                try {
-                    const res = await fetch(`http://192.168.1.134:8000/api/references/${parsed.id}`);
-                    const data = await res.json();
-                    setReviews(data);
-                } catch (error) {
-                    console.error('error cargando reviews: ', error);
+    const submitRating = async () => {
+        try {
+          const currentProfileString = await AsyncStorage.getItem('currentProfile');
+          const currentProfile = currentProfileString ? JSON.parse(currentProfileString) : null;
+          
+          if (!currentProfile) return;
+            
+          
+          await axios.post('http://192.168.1.13:8000/api/ratings', {
+            from_user_id: currentProfile.id,
+            to_user_id: profile?.id, 
+            rating: userRating,
+          });
+          console.log(profile?.id, currentProfile.id);
+          alert('Calificación enviada');
+        } catch (error) {
+          console.error('Error al enviar calificación:', error);
+          alert('No se pudo enviar la calificación');
+        }
+      };
+      
+      useFocusEffect(
+        useCallback(() => {
+            const loadProfileAndReviews = async () => {
+                const json = await AsyncStorage.getItem('selectedProfile');
+                if (json) {
+                    const parsed = JSON.parse(json);
+                    setProfile(parsed);
+    
+                    try {
+                        const res = await fetch(`http://192.168.1.13:8000/api/references/${parsed.id}`);
+                        const data = await res.json();
+                        setReviews(data);
+                    } catch (error) {
+                        console.error('error cargando reviews: ', error);
+                    }
                 }
             }
-        }
-        
-        loadProfileAndReviews();
-      }, []);
+            
+            loadProfileAndReviews();
+        }, [])
+      );
     
       if (!profile) {
         return (
@@ -93,7 +122,7 @@ export default function UserProfile() {
             return;
           }
       
-          const res = await fetch('http://192.168.1.134:8000/api/reports', {
+          const res = await fetch('http://192.168.1.13:8000/api/reports', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -129,7 +158,7 @@ export default function UserProfile() {
 
             if (!currentUser || !profile) return;
 
-            const res = await fetch(`http://192.168.1.134:8000/api/references`, {
+            const res = await fetch(`http://192.168.1.13:8000/api/references`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,7 +175,7 @@ export default function UserProfile() {
             if (res.ok) {
                 setExperience('');
 
-                const refreshed = await fetch(`http://192.168.1.134:8000/api/references/${profile.id}`);
+                const refreshed = await fetch(`http://192.168.1.13:8000/api/references/${profile.id}`);
                 const updateReviews = await refreshed.json();
                 setReviews(updateReviews);
             } else {
@@ -212,17 +241,31 @@ export default function UserProfile() {
       {/* Reseñas */}
       <Text style={styles.sectionTitle}>Reseñas de otros usuarios</Text>
       {reviews.map(r => (
-  <View key={r.id} style={styles.reviewCard}>
-    <View style={styles.reviewHeader}>
-      <Image source={{ uri: r.photo }} style={styles.reviewAvatar} />
-      <Text style={styles.reviewerName}>{r.name}</Text>
-    </View>
-    <Text style={styles.reviewContent}>{r.comment}</Text>
-  </View>
-))}
+        <View key={r.id} style={styles.reviewCard}>
+            <View style={styles.reviewHeader}>
+                <Image source={{ uri: r.photo }} style={styles.reviewAvatar} />
+                <Text style={styles.reviewerName}>{r.name}</Text>
+            </View>
+            <Text style={styles.reviewContent}>{r.comment}</Text>
+        </View>
+        ))}
+    <Text style={styles.sectionTitle}>Comparte tu experiencia</Text>
 
-      {/* Compartir experiencia */}
-      <Text style={styles.sectionTitle}>Comparte tu experiencia</Text>
+    <View style={{ flexDirection: 'row', marginVertical: 10,  justifyContent: 'center'}}>
+    {[1, 2, 3, 4, 5].map((star) => (
+        <TouchableOpacity key={star} onPress={() => handleRatingPress(star)}>
+        <FontAwesome
+            name={userRating >= star ? 'star' : 'star-o'}
+            size={30}
+            color="#5630D4"
+            style={{ marginHorizontal: 5 }}
+        />
+        </TouchableOpacity>
+    ))}
+    </View>
+    <TouchableOpacity onPress={submitRating} style={{ backgroundColor: '#5630D4', padding: 10, borderRadius: 8, marginBottom:10}}>
+        <Text style={{ color: '#fff', textAlign: 'center' }}>Enviar calificación</Text>
+    </TouchableOpacity>
       <TextInput
         style={styles.experienceInput}
         placeholder="Mi experiencia con este usuario fue..."
@@ -235,7 +278,7 @@ export default function UserProfile() {
       <TouchableOpacity style={styles.submitButton} onPress={handleSendExperience}>
         <Text style={styles.submitButtonText}>Enviar experiencia</Text>
       </TouchableOpacity>
-    </ScrollView>
+</ScrollView>
 
           <Modal
           visible={showReportModal}

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { styles } from '@/styles/tabs.home';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { router, useRouter } from 'expo-router';
+import { router, useFocusEffect, useRouter } from 'expo-router';
 
 
 type EmployeeCardProps = {
@@ -78,7 +78,7 @@ const Home = () => {
   const fetchEmployees = async () => {
     try {
       const token = await AsyncStorage.getItem('token'); 
-      const response = await axios.get('http://192.168.1.134:8000/api/employees', {
+      const response = await axios.get('http://192.168.1.13:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -112,7 +112,7 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://192.168.1.134:8000/api/v1/auth/me', {
+        const res = await fetch('http://192.168.1.13:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -155,10 +155,11 @@ const Home = () => {
     handleSearch(searchQuery);
   }, [employees]);
 
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchEmployees();
+    }, [])
+  );
 
   return (
 
