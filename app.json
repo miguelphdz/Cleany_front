@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "cleany",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -15,8 +15,28 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff",
-        "softwareKeyboardLayoutMode": "pan"
-      }
+        "softwareKeyboardLayoutMode": "pan",
+        "intentFilters": [
+          {
+            "action": "VIEW",
+            "data": [
+              {
+                "scheme": "https",
+                "host": "*.cleany.com",
+                "pathPrefix": "/"
+              },
+              {
+                "scheme": "cleany"
+              }
+            ],
+            "category": [
+              "BROWSABLE",
+              "DEFAULT"
+            ]
+          }
+        ]
+      },
+      "package": "com.miguelphdz.cleany"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +57,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "fbc6d3dd-525f-4c85-a11c-63351b96ab00"
+      }
     }
   }
 }

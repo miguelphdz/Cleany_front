@@ -109,7 +109,11 @@ export  const styles = StyleSheet.create({
         top: 16,
         right: 16,
       },
-    
+      shareButton: {
+        position: 'absolute',
+        top: 16,
+        left: 20,
+      },
       modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.4)',

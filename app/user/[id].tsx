@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
+  Share,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
@@ -64,7 +65,7 @@ export default function UserProfile() {
           if (!currentProfile) return;
             
           
-          await axios.post('http://192.168.1.13:8000/api/ratings', {
+          await axios.post('http://192.168.1.154:8000/api/ratings', {
             from_user_id: currentProfile.id,
             to_user_id: profile?.id, 
             rating: userRating,
@@ -86,7 +87,7 @@ export default function UserProfile() {
                     setProfile(parsed);
     
                     try {
-                        const res = await fetch(`http://192.168.1.13:8000/api/references/${parsed.id}`);
+                        const res = await fetch(`http://192.168.1.154:8000/api/references/${parsed.id}`);
                         const data = await res.json();
                         setReviews(data);
                     } catch (error) {
@@ -122,7 +123,7 @@ export default function UserProfile() {
             return;
           }
       
-          const res = await fetch('http://192.168.1.13:8000/api/reports', {
+          const res = await fetch('http://192.168.1.154:8000/api/reports', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -158,7 +159,7 @@ export default function UserProfile() {
 
             if (!currentUser || !profile) return;
 
-            const res = await fetch(`http://192.168.1.13:8000/api/references`, {
+            const res = await fetch(`http://192.168.1.154:8000/api/references`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -175,7 +176,7 @@ export default function UserProfile() {
             if (res.ok) {
                 setExperience('');
 
-                const refreshed = await fetch(`http://192.168.1.13:8000/api/references/${profile.id}`);
+                const refreshed = await fetch(`http://192.168.1.154:8000/api/references/${profile.id}`);
                 const updateReviews = await refreshed.json();
                 setReviews(updateReviews);
             } else {
@@ -186,11 +187,35 @@ export default function UserProfile() {
         }
     };
 
+    const shareProfile = async (id: number) => {
+      try {
+        const link = `http://192.168.1.154:8000/shareProfile/${profile.id}`;
+        await Share.share({
+          message: `¡Ve mi perfil y conóceme! ${link}`,
+        });
+      } catch (error) {
+        console.error('Error al compartir: ', error);
+      }
+    };
+    
+
   return (
     <>
 <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+      <TouchableOpacity
+            style={styles.reportButton}
+            onPress={openReport}
+          >
+            <Ionicons name="alert-circle-outline" size={28} color="#E53935" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.shareButton}
+            onPress={() => shareProfile(profile.id)}
+          >
+            <Ionicons name="share-social-outline" size={28} color="#E53935" />
+          </TouchableOpacity>
         <Image source={{ uri: profile.photo }} style={styles.avatar} />
         <Text style={styles.username}>{profile.name}</Text>
         <View style={styles.stars}>
@@ -204,14 +229,6 @@ export default function UserProfile() {
             />
           ))}
         </View>
-
-        <TouchableOpacity
-            style={styles.reportButton}
-            onPress={openReport}
-          >
-            <Ionicons name="alert-circle-outline" size={28} color="#E53935" />
-          </TouchableOpacity>
-
       </View>
 
       {/* Descripción */}
