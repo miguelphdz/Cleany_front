@@ -16,6 +16,7 @@ export const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 16,
+    marginRight: 16
   },
   profileHeader: {
     flexDirection: 'row',
@@ -128,6 +129,10 @@ export const editStyles = StyleSheet.create({
   },
   modalBackButton: {
 
+  },
+  screentitle: {
+    flexDirection: 'row',
+    paddingLeft: 8,
   },
   photoContainer: {
     alignItems: 'center',
