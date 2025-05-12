@@ -159,7 +159,7 @@ export default function UserProfile() {
 
             if (!currentUser || !profile) return;
 
-            const res = await fetch(`http://192.168.1.154:8000/api/references`, {
+            const res = await fetch(`http://192.168.1.10:8000/api/references`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ export default function UserProfile() {
             if (res.ok) {
                 setExperience('');
 
-                const refreshed = await fetch(`http://192.168.1.154:8000/api/references/${profile.id}`);
+                const refreshed = await fetch(`http://192.168.1.10:8000/api/references/${profile.id}`);
                 const updateReviews = await refreshed.json();
                 setReviews(updateReviews);
             } else {

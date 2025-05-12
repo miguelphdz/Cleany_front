@@ -78,7 +78,7 @@ const Home = () => {
   const fetchEmployees = async () => {
     try {
       const token = await AsyncStorage.getItem('token'); 
-      const response = await axios.get('http://192.168.1.154:8000/api/employees', {
+      const response = await axios.get('http://192.168.1.10:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -112,7 +112,7 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://192.168.1.154:8000/api/v1/auth/me', {
+        const res = await fetch('http://192.168.1.10:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,11 +128,13 @@ const Home = () => {
         setUserLocation(data.user?.profile?.location?.name ?? 'Ubicación desconocida');
         
         const profileObj = {
-          name: `${data.user.profile.name} ${data.user.profile.last_name}`,
+          name: data.user.profile.name,
+          last_name: data.user.profile.last_name,
           description: data.user.profile.description,
           rating: data.user.profile.calification ?? 0,
           photo: data.user.profile.photo,
-          user_type: data.user.profile.location,
+          location: data.user.profile.location.name,
+          user_type: data.user.user_type,
           id: data.user.profile.id, 
         };
         
