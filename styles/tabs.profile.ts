@@ -1,101 +1,120 @@
-import { StyleSheet, Dimensions } from "react-native"
-
-const { width, height } = Dimensions.get("window")
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
-    padding: 20,
+    padding: 16,
     backgroundColor: '#fff',
   },
   header: {
     justifyContent: "flex-start"
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginRight: 10,
   },
   profileInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
     flex: 1,
+    marginLeft: 12,
+    flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   name: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '600',
   },
   starsContainer: {
     flexDirection: 'row',
-    marginVertical: 10,
+    marginVertical: 8,
   },
   userTypeLabel: {
-    fontWeight: 'bold',
-    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 12,
   },
   tagContainer: {
     flexDirection: 'row',
-    marginVertical: 10,
+    marginVertical: 8,
   },
   tag: {
     flexDirection: 'row',
-    backgroundColor: '#EDD6CE',
-    padding: 8,
-    marginRight: 10,
-    borderRadius: 10,
     alignItems: 'center',
+    backgroundColor: '#eef',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 8,
   },
   tagText: {
     fontSize: 14,
-    color: '#000',
   },
   reviewBox: {
-    backgroundColor: '#EDD6CE',
-    padding: 15,
-    borderRadius: 10,
     marginTop: 20,
+    padding: 12,
+    backgroundColor: '#F0EFFF',
+    borderRadius: 8,
   },
   reviewTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 10,
   },
   reviewItem: {
     flexDirection: 'row',
-    marginBottom: 10,
-    alignItems: 'flex-start',
+    marginBottom: 12,
   },
   reviewPhoto: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 25,
-    marginRight: 10,
+  },
+  reviewTextContainer: {
+    marginLeft: 10,
+    flex: 1,
   },
   reviewName: {
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '500',
   },
   reviewComment: {
-    fontSize: 13,
-    color: '#333',
+    fontSize: 14,
+    color: '#555',
   },
 });
 
-// edición
 export const editStyles = StyleSheet.create({
-  modalContainer: {
-    padding: 20,
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  halfModalWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '75%',
     backgroundColor: '#fff',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: 'hidden',
+  },
+  modalContainer: {
+    padding: 30,
   },
   modalHeader: {
     flexDirection: "row",
@@ -112,59 +131,77 @@ export const editStyles = StyleSheet.create({
   },
   photoContainer: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   photo: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   uploadIcon: {
-    marginTop: 8,
+    position: 'absolute',
+    bottom: 0,
+    right: 20,
+    backgroundColor: '#ddd',
+    padding: 6,
+    borderRadius: 20,
   },
   photoLabel: {
     marginTop: 8,
+    fontSize: 14,
   },
   row: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  row1: {
+  
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    alignItems: 'center',
+    
+
   },
   inputHalf: {
-    flex: 1,
+    width: '48%',
     borderWidth: 1,
-    borderColor: '#999',
-    padding: 10,
+    borderColor: '#ccc',
     borderRadius: 8,
+    padding: 8,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#999',
-    padding: 10,
-    borderRadius: 8,
+    borderBottomWidth: 1,
+    borderColor: '#F0EFFF',
+    paddingVertical: 10,   // solo padding arriba y abajo
+    paddingHorizontal: 0,  // o el que necesites
     marginBottom: 12,
   },
   selectLabel: {
-    marginTop: 16,
-    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '400',
+    marginBottom: 6,
+    
   },
   select: {
     borderWidth: 1,
-    borderColor: '#999',
+    borderColor: '#F0EFFF',
     borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    backgroundColor: '#f5f5f5',
+    marginBottom: 16,
+    paddingHorizontal: 4,
+    padding: 8,
+    backgroundColor: '#F0EFFF'
   },
   button: {
     backgroundColor: '#5637DD',
-    padding: 14,
+    paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 12,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

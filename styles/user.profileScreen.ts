@@ -25,7 +25,10 @@ export  const styles = StyleSheet.create({
         fontSize: 14, color: '#333', textAlign: 'center', marginBottom: 20,
       },
       sectionTitle: {
-        fontSize: 16, fontWeight: '600', marginTop: 16, marginBottom: 8,
+        fontSize: 16, 
+        fontWeight: '600', 
+        marginTop: 16, 
+        marginBottom: 8,
       },
     
       // Mensaje
