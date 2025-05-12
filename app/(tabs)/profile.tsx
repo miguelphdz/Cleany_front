@@ -16,14 +16,6 @@ import { hoverGestureHandlerProps } from 'react-native-gesture-handler/lib/types
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 
-type Review = {
-  id: number;
-  name: string;
-  comment: string;
-  rating: number;
-  photo: string;
-};
-
 type ProfileData = {
   id: number,
   name: string;
@@ -40,30 +32,6 @@ type Location = {
   name: string;
 };
 
-
-const reviews: Review[] = [
-  {
-    id: 1,
-    name: 'Cliente 1',
-    comment: 'Muy buen trabajo, rápido y profesional.',
-    rating: 5,
-    photo: 'https://randomuser.me/api/portraits/women/1.jpg',
-  },
-  {
-    id: 2,
-    name: 'Cliente 2',
-    comment: 'Excelente servicio. Lo recomiendo mucho.',
-    rating: 4,
-    photo: 'https://randomuser.me/api/portraits/men/2.jpg',
-  },
-  {
-    id: 3,
-    name: 'Cliente 3',
-    comment: 'Muy amable y puntual.',
-    rating: 5,
-    photo: 'https://randomuser.me/api/portraits/women/3.jpg',
-  },
-];
 
 const Profile = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
@@ -144,19 +112,6 @@ const Profile = () => {
           <Text style={styles.tagText}>Morelia</Text>
           <Ionicons name="location-outline" size={16} color="#5637DD" style={{ marginLeft: 4 }} />
         </View>
-      </View>
-
-      <View style={styles.reviewBox}>
-        <Text style={styles.reviewTitle}>Reseñas de otros usuarios</Text>
-        {reviews.map((r) => (
-          <View key={r.id} style={styles.reviewItem}>
-            <Image source={{ uri: r.photo }} style={styles.reviewPhoto} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.reviewName}>{r.name}</Text>
-              <Text style={styles.reviewComment}>{r.comment}</Text>
-            </View>
-          </View>
-        ))}
       </View>
 
       <Modal visible={isEditing} animationType="slide">
