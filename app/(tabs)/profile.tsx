@@ -69,17 +69,39 @@ const Profile = () => {
     getProfile();
   }, []);
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <FontAwesome
-        key={i}
-        name={i < rating ? 'star' : 'star-o'}
-        size={25}
-        color="#5637DD"
-        style={{ marginRight: 4 }}
-      />
-    ));
+  // Determina nombre de ubicación una vez cargados perfil y ubicaciones
+  useEffect(() => {
+    if (profileData && locations.length) {
+      const loc = locations.find(l => l.id === profileData.id_location);
+      setLocationName(loc ? loc.name : '');
+    }
+  }, [profileData, locations]);
+
+  // Guarda perfil modificado
+  const saveProfile = async () => {
+    if (!profileData) return;
+    try {
+      await AsyncStorage.setItem('profileData', JSON.stringify(profileData));
+      await fetch(`http://192.168.1.23:8000/api/profile/${profileData.id}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(profileData),
+      });
+      setIsEditing(false);
+      Alert.alert('Perfil guardado', 'Tus cambios se han guardado correctamente.');
+    } catch (err) {
+      console.error('Error guardando perfil:', err);
+      Alert.alert('Error', 'No se pudo guardar el perfil.');
+    }
   };
+
+  // Render estrellas
+  const renderStars = (rating: number) => (
+    <View style={styles.starsContainer}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <FontAwesome key={i} name={i < rating ? 'star' : 'star-o'} size={20} style={{ marginRight: 4 }} />
+      ))}
+    </View>
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
