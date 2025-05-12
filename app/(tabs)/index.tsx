@@ -78,7 +78,7 @@ const Home = () => {
   const fetchEmployees = async () => {
     try {
       const token = await AsyncStorage.getItem('token'); 
-      const response = await axios.get('http://192.168.1.134:8000/api/employees', {
+      const response = await axios.get('http://192.168.1.23:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -112,7 +112,7 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://192.168.1.134:8000/api/v1/auth/me', {
+        const res = await fetch('http://192.168.1.23:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
