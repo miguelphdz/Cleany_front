@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Alert,
 } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { styles, editStyles } from '@/styles/tabs.profile'; 
 import { Picker } from '@react-native-picker/picker';   
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hoverGestureHandlerProps } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/hoverGesture';
+import { router } from 'expo-router';
 
 type Review = {
   id: number;
@@ -23,12 +25,21 @@ type Review = {
 };
 
 type ProfileData = {
+  id: number,
   name: string;
-  lastname: string;
+  last_name: string;
   description: string;
   rating: number;
   photo: string;
+  location: string;
+  user_type: string;
 };
+
+type Location = {
+  id: number;
+  name: string;
+};
+
 
 const reviews: Review[] = [
   {
@@ -55,19 +66,84 @@ const reviews: Review[] = [
 ];
 
 const Profile = () => {
-  const [userType, setUserType] = useState('Empleado');
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [userLocation, setUserLocation] = useState<string>('');
 
   useEffect(() => {
     const getProfile = async () => {
-      const json = await AsyncStorage.getItem('profileData');
+      const json = await AsyncStorage.getItem('currentProfile');
       if (json) {
         setProfileData(JSON.parse(json));
       }
     };
     getProfile();
   }, []);
+
+  const handleSave = async () => {
+    if (!profileData) return;
+  
+    try {
+      const token = await AsyncStorage.getItem('token'); // Asegúrate de tener guardado el JWT
+      const userId = profileData.id;
+  
+      // Encontrar la ubicación por nombre
+      const selectedLocation = locations.find(loc => loc.name === profileData.location);
+  
+      if (!selectedLocation) {
+        Alert.alert('Error', 'Ubicación no válida.');
+        return;
+      }
+  
+      const response = await fetch(`http://192.168.1.10:8000/api/v1/auth/update/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Si tu ruta requiere autenticación
+        },
+        body: JSON.stringify({
+          name: profileData.name,
+          last_name: profileData.last_name,
+          description: profileData.description,
+          photo: profileData.photo,
+          user_type: profileData.user_type,
+          id_location: selectedLocation.id,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Alert.alert('Éxito', 'Perfil actualizado correctamente.');
+        await AsyncStorage.setItem('currentProfile', JSON.stringify(profileData));
+        setIsEditing(false);
+      } else {
+        console.log('Errores:', data);
+        Alert.alert('Error', 'Hubo un problema al actualizar el perfil.');
+      }
+  
+    } catch (error) {
+      console.error('Error al guardar perfil:', error);
+      Alert.alert('Error', 'No se pudo guardar el perfil.');
+    }
+  };  
+  
+  const [locations, setLocations] = useState<Location[]>([]);
+  useEffect(() => {
+      const fetchLocations = async () => {
+        try {
+          const response = await fetch('http://192.168.1.10:8000/api/locations');
+          const data = await response.json();
+          setLocations(data);
+        } catch (error) {
+          console.error('Error al obtener ubicaciones:', error);
+          Alert.alert('Error', 'No se pudieron cargar las ubicaciones.');
+        }
+      };
+    
+      fetchLocations();
+    }, []);
+
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -88,7 +164,7 @@ const Profile = () => {
       <View style={styles.profileHeader}>
         <Image source={{ uri: profileData?.photo }} style={styles.profileImage} />
         <View style={styles.profileInfo}>
-          <Text style={styles.name}>{profileData?.name}</Text>
+          <Text style={styles.name}>{profileData?.name} {profileData?.last_name}</Text>
           <TouchableOpacity onPress={() => setIsEditing(true)}>
             <Ionicons name="pencil" size={26} color="black" />
           </TouchableOpacity>
@@ -103,10 +179,10 @@ const Profile = () => {
 
       <View style={styles.tagContainer}>
         <View style={styles.tag}>
-          <Text style={styles.tagText}>{userType}</Text>
+          <Text style={styles.tagText}>{profileData?.user_type}</Text>
         </View>
         <View style={styles.tag}>
-          <Text style={styles.tagText}>Morelia</Text>
+          <Text style={styles.tagText}>{profileData?.location}</Text>
           <Ionicons name="location-outline" size={16} color="#5637DD" style={{ marginLeft: 4 }} />
         </View>
       </View>
@@ -126,7 +202,12 @@ const Profile = () => {
 
       <Modal visible={isEditing} animationType="slide">
         <ScrollView contentContainerStyle={editStyles.modalContainer}>
-          <Text style={editStyles.modalTitle}>Editar Perfil</Text>
+          <View style={editStyles.modalHeader}>
+            <TouchableOpacity onPress={() => setIsEditing(false)}>
+              <Ionicons name="arrow-back-outline" size={24} style={editStyles.modalBackButton}/>
+            </TouchableOpacity>
+            <Text style={editStyles.modalTitle}>Editar Perfil</Text>
+          </View>
 
           <View style={editStyles.photoContainer}>
             <Image source={{ uri: profileData?.photo }} style={editStyles.photo} />
@@ -148,9 +229,9 @@ const Profile = () => {
             <TextInput
               placeholder="Apellido"
               style={editStyles.inputHalf}
-              value={profileData?.lastname}
+              value={profileData?.last_name}
               onChangeText={(text) =>
-                setProfileData((prev) => (prev ? { ...prev, lastname: text } : null))
+                setProfileData((prev) => (prev ? { ...prev, last_name: text } : null))
               }
             />
           </View>
@@ -168,24 +249,36 @@ const Profile = () => {
           <Text style={editStyles.selectLabel}>Tipo de Usuario</Text>
             <View style={editStyles.select}>
               <Picker
-                selectedValue={userType}
-                onValueChange={(value) => setUserType(value)}
+                selectedValue={profileData?.user_type}
                 style={{ height: 50 }}
                 dropdownIconColor="#5637DD"
               >
                 <Picker.Item label="Quiero..." value="" />
-                <Picker.Item label="Encontrar servicios de limpieza" value="cliente" />
-                <Picker.Item label="Ofrecer servicios de limpieza" value="empleado" />
+                <Picker.Item label="Encontrar servicios de limpieza" value="CLIENT" />
+                <Picker.Item label="Ofrecer servicios de limpieza" value="EMPLOYEE" />
                 </Picker>
             </View>
 
 
-          <Text style={editStyles.selectLabel}>Ubicación</Text>
-          <View style={editStyles.select}>
-            <Text>Morelia</Text>
-          </View>
+            <Text style={editStyles.selectLabel}>Ubicación</Text>
+              <View style={editStyles.select}>
+                <Picker
+                  selectedValue={profileData?.location}
+                  onValueChange={(value) =>
+                    setProfileData((prev) => (prev ? { ...prev, location: value } : null))
+                  }
+                  style={{ height: 50 }}
+                  dropdownIconColor="#5637DD"
+                >
+                  <Picker.Item label="Selecciona tu ciudad" value="" />
+                  {locations.map((loc) => (
+                    <Picker.Item key={loc.id} label={loc.name} value={loc.name} />
+                  ))}
+                </Picker>
+              </View>
 
-          <TouchableOpacity style={editStyles.button} onPress={() => setIsEditing(false)}>
+
+          <TouchableOpacity style={editStyles.button} onPress={handleSave}>
             <Text style={editStyles.buttonText}>Aceptar</Text>
           </TouchableOpacity>
         </ScrollView>

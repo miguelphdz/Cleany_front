@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { styles } from '@/styles/tabs.home';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { router, useRouter } from 'expo-router';
+import { router, useFocusEffect, useRouter } from 'expo-router';
 
 
 type EmployeeCardProps = {
@@ -78,7 +78,7 @@ const Home = () => {
   const fetchEmployees = async () => {
     try {
       const token = await AsyncStorage.getItem('token'); 
-      const response = await axios.get('http://192.168.1.134:8000/api/employees', {
+      const response = await axios.get('http://192.168.1.10:8000/api/employees', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -112,7 +112,7 @@ const Home = () => {
       }
   
       try {
-        const res = await fetch('http://192.168.1.134:8000/api/v1/auth/me', {
+        const res = await fetch('http://192.168.1.10:8000/api/v1/auth/me', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -127,13 +127,19 @@ const Home = () => {
         
         setUserLocation(data.user?.profile?.location?.name ?? 'Ubicación desconocida');
         
-        await AsyncStorage.setItem('profileData', JSON.stringify({
-          name: `${data.user.profile.name} ${data.user.profile.last_name}`,
+        const profileObj = {
+          name: data.user.profile.name,
+          last_name: data.user.profile.last_name,
           description: data.user.profile.description,
           rating: data.user.profile.calification ?? 0,
           photo: data.user.profile.photo,
-          user_type: data.user.profile.location,
-        }));
+          location: data.user.profile.location.name,
+          user_type: data.user.user_type,
+          id: data.user.profile.id, 
+        };
+        
+        await AsyncStorage.setItem('currentProfile', JSON.stringify(profileObj));
+        
         
       } catch (error) {
         console.log('ERROR en validación:', error);
@@ -151,10 +157,13 @@ const Home = () => {
     handleSearch(searchQuery);
   }, [employees]);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchEmployees();
+    }, [])
+  );
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+
 
   return (
 

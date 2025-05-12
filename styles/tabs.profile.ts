@@ -7,6 +7,9 @@ export const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  header: {
+    justifyContent: "flex-start"
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -94,10 +97,18 @@ export const editStyles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent:"flex-start"
+  },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    paddingLeft:16,
+  },
+  modalBackButton: {
+
   },
   photoContainer: {
     alignItems: 'center',
