@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,6 +14,7 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hoverGestureHandlerProps } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/hoverGesture';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 
 type Review = {
   id: number;
@@ -81,52 +81,11 @@ const Profile = () => {
   }, []);
 
   const handleSave = async () => {
-    if (!profileData) return;
+
+  };
   
-    try {
-      const token = await AsyncStorage.getItem('token'); // Asegúrate de tener guardado el JWT
-      const userId = profileData.id;
+
   
-      // Encontrar la ubicación por nombre
-      const selectedLocation = locations.find(loc => loc.name === profileData.location);
-  
-      if (!selectedLocation) {
-        Alert.alert('Error', 'Ubicación no válida.');
-        return;
-      }
-  
-      const response = await fetch(`http://192.168.1.10:8000/api/v1/auth/update/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Si tu ruta requiere autenticación
-        },
-        body: JSON.stringify({
-          name: profileData.name,
-          last_name: profileData.last_name,
-          description: profileData.description,
-          photo: profileData.photo,
-          user_type: profileData.user_type,
-          id_location: selectedLocation.id,
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        Alert.alert('Éxito', 'Perfil actualizado correctamente.');
-        await AsyncStorage.setItem('currentProfile', JSON.stringify(profileData));
-        setIsEditing(false);
-      } else {
-        console.log('Errores:', data);
-        Alert.alert('Error', 'Hubo un problema al actualizar el perfil.');
-      }
-  
-    } catch (error) {
-      console.error('Error al guardar perfil:', error);
-      Alert.alert('Error', 'No se pudo guardar el perfil.');
-    }
-  };  
   
   const [locations, setLocations] = useState<Location[]>([]);
   useEffect(() => {
@@ -164,7 +123,7 @@ const Profile = () => {
       <View style={styles.profileHeader}>
         <Image source={{ uri: profileData?.photo }} style={styles.profileImage} />
         <View style={styles.profileInfo}>
-          <Text style={styles.name}>{profileData?.name} {profileData?.last_name}</Text>
+          <Text style={styles.name}>{profileData?.name}</Text>
           <TouchableOpacity onPress={() => setIsEditing(true)}>
             <Ionicons name="pencil" size={26} color="black" />
           </TouchableOpacity>
@@ -179,10 +138,10 @@ const Profile = () => {
 
       <View style={styles.tagContainer}>
         <View style={styles.tag}>
-          <Text style={styles.tagText}>{profileData?.user_type}</Text>
+          <Text style={styles.tagText}>{userType}</Text>
         </View>
         <View style={styles.tag}>
-          <Text style={styles.tagText}>{profileData?.location}</Text>
+          <Text style={styles.tagText}>Morelia</Text>
           <Ionicons name="location-outline" size={16} color="#5637DD" style={{ marginLeft: 4 }} />
         </View>
       </View>
